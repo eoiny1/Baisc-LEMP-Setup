@@ -1,0 +1,33 @@
+version: "3"
+
+networks: 
+    app-tier:
+        driver: bridge
+
+services:
+    app:
+        build:
+            context: .
+            dockerfile: .docker/php/Dockerfile
+        volumes:
+            - ./app:/srv/app
+        networks: 
+            - app-tier
+        ports:
+            - 9002:9000
+        env_file:
+            - .env
+    nginx:
+        build:
+            context: .
+            dockerfile: .docker/nginx/Dockerfile
+        ports:
+            - 8080:80
+            - 443:443
+        volumes:
+            - ./app:/srv/app
+            - ./certs:/etc/ssl
+        env_file:
+            - .env
+        networks: 
+            - app-tier
